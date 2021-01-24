@@ -2,4 +2,11 @@
     <dimen name="fab_margin">16dp</dimen>
 
     <dimen name="default_text_size">20sp</dimen>
+
+    <dimen name="logoMargin">25dp</dimen>
+    <dimen name="logoRight">200dp</dimen>
+    <dimen name="logoBottom">175dp</dimen>
+    <dimen name="logoTop">0dp</dimen>
+    <dimen name="logoLeft">0dp</dimen>
+    <dimen name="logoPadding">8dp</dimen>
 </resources>
