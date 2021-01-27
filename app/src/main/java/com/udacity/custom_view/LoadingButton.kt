@@ -60,8 +60,8 @@ class LoadingButton @JvmOverloads constructor(
         super.onDraw(canvas)
         drawButton(canvas)
         if (buttonState == ButtonState.Loading) {
+            Timber.i("Attempting animations")
             drawButtonFill(canvas)
-            Timber.i("Tried")
             drawCircle(canvas)
         }
         drawText(canvas)
@@ -83,7 +83,7 @@ class LoadingButton @JvmOverloads constructor(
         buttonAnimator = ValueAnimator.ofFloat(0F, widthSize.toFloat()).apply {
             duration = 1000
             addUpdateListener { valueAnimator ->
-                progress = animatedValue as Float
+                progress = valueAnimator.animatedValue as Float
                 valueAnimator.repeatCount = ValueAnimator.INFINITE
                 valueAnimator.repeatMode = ValueAnimator.REVERSE
                 valueAnimator.interpolator = LinearInterpolator()
@@ -105,7 +105,7 @@ class LoadingButton @JvmOverloads constructor(
         circleAnimator = ValueAnimator.ofFloat(0F, 360F).apply {
             duration = 1000
             addUpdateListener { valueAnimator ->
-                angle = animatedValue as Float
+                angle = valueAnimator.animatedValue as Float
                 valueAnimator.repeatCount = ValueAnimator.INFINITE
             }
             start()
