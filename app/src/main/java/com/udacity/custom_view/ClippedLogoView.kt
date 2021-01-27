@@ -1,10 +1,11 @@
-package com.udacity
+package com.udacity.custom_view
 
 import android.content.Context
 import android.graphics.*
 import android.os.Build
 import android.util.AttributeSet
 import android.view.View
+import com.udacity.R
 
 class ClippedLogoView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : View(context, attrs, defStyleAttr) {
 
@@ -58,11 +59,11 @@ class ClippedLogoView @JvmOverloads constructor(context: Context, attrs: Attribu
         val path = Path()
         path.moveTo(10 * logoPadding, logoMargin + 5 * logoPadding)
         path.lineTo(logoRight - 10 * logoPadding, logoMargin + 5 * logoPadding)
-        path.lineTo(logoRight - 10 * logoPadding, logoBottom - 9 * logoPadding)
-        path.lineTo(logoRight - 10 * logoPadding + logoMargin, logoBottom - 9 * logoPadding)
-        path.lineTo(logoRight / 2, logoBottom - logoMargin)
-        path.lineTo(10 * logoPadding - logoMargin, logoBottom - 9 * logoPadding)
-        path.lineTo(10 * logoPadding, logoBottom - 9 * logoPadding)
+        path.lineTo(logoRight - 10 * logoPadding, logoBottom - 8 * logoPadding)
+        path.lineTo(logoRight - 10 * logoPadding + logoMargin, logoBottom - 8 * logoPadding)
+        path.lineTo(logoRight / 2, logoBottom - logoMargin + logoPadding)
+        path.lineTo(10 * logoPadding - logoMargin, logoBottom - 8 * logoPadding)
+        path.lineTo(10 * logoPadding, logoBottom - 8 * logoPadding)
         path.lineTo(10 * logoPadding, 5 * logoPadding)
         path.close()
         return path

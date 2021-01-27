@@ -5,8 +5,9 @@
 
     <dimen name="logoMargin">25dp</dimen>
     <dimen name="logoRight">200dp</dimen>
-    <dimen name="logoBottom">175dp</dimen>
+    <dimen name="logoBottom">165dp</dimen>
     <dimen name="logoTop">0dp</dimen>
     <dimen name="logoLeft">0dp</dimen>
     <dimen name="logoPadding">8dp</dimen>
+    <dimen name="textSize">18sp</dimen>
 </resources>
