@@ -2,5 +2,6 @@
 <resources>
     <declare-styleable name="LoadingButton">
         <attr name="buttonBackground" format="color" />
+        <attr name="buttonText" format="string" />
     </declare-styleable>
 </resources>
