@@ -22,12 +22,4 @@
 
     <include layout="@layout/content_detail" />
 
-    <Button
-        android:id="@+id/ok_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center"
-        android:layout_margin="@dimen/fab_margin"
-        android:text="@string/ok" />
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

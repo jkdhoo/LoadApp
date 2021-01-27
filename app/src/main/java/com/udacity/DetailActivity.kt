@@ -2,11 +2,15 @@ package com.udacity
 
 import android.app.NotificationManager
 import android.content.Intent
+import android.graphics.Region
+import android.os.Build
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_detail.*
+import kotlinx.android.synthetic.main.content_detail.*
 import timber.log.Timber
 
 class DetailActivity : AppCompatActivity() {
