@@ -10,7 +10,6 @@ import com.udacity.R
 class ClippedLogoView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : View(context, attrs, defStyleAttr) {
 
     private val paint = Paint().apply {
-        // Smooth out edges of what is drawn without affecting shape.
         isAntiAlias = true
     }
 
@@ -27,31 +26,18 @@ class ClippedLogoView @JvmOverloads constructor(context: Context, attrs: Attribu
 
     private fun drawLogo(canvas: Canvas) {
         canvas.drawColor(resources.getColor(R.color.colorPrimaryDark, null))
+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            @Suppress("DEPRECATION")
             canvas.clipPath(getArrowPath(), Region.Op.DIFFERENCE)
         } else {
             canvas.clipOutPath(getArrowPath())
         }
 
         paint.color = resources.getColor(R.color.logo, null)
-        canvas.drawRoundRect(
-            logoLeft,
-            logoMargin + logoPadding * 4,
-            logoRight - (logoPadding * 6),
-            logoBottom,
-            logoRight / 4,
-            logoRight / 4,
-            paint
-        )
-        canvas.drawRoundRect(
-            logoPadding * 6,
-            logoMargin + logoPadding * 6,
-            logoRight,
-            logoBottom,
-            logoRight / 4,
-            logoRight / 4,
-            paint
-        )
+
+        canvas.drawRoundRect(logoLeft, logoMargin + logoPadding * 4, logoRight - (logoPadding * 6), logoBottom, logoRight / 4, logoRight / 4, paint)
+        canvas.drawRoundRect(logoPadding * 6, logoMargin + logoPadding * 6, logoRight, logoBottom, logoRight / 4, logoRight / 4, paint)
         canvas.drawCircle(logoRight / 2, logoBottom / 2, (logoBottom - logoMargin * 2) / 2, paint)
     }
 

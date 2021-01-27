@@ -1,32 +1,26 @@
 package com.udacity
 
 import android.app.DownloadManager
+import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
+import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import timber.log.Timber
 
-
 class MainActivity : AppCompatActivity() {
 
     private var downloadID: Long = 0
-
-    private lateinit var notificationManager: NotificationManager
-    private lateinit var pendingIntent: PendingIntent
-    private lateinit var action: NotificationCompat.Action
-
     private var url: String? = null
+    lateinit var downloadManager: DownloadManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,13 +52,28 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
+        createChannel(
+            getString(R.string.details_channel_id),
+            getString(R.string.details_channel_name)
+        )
     }
 
     private val receiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+        override fun onReceive(context: Context, intent: Intent?) {
+            val id = intent!!.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
             custom_button.buttonState = ButtonState.Completed
             Timber.i("Download Complete")
+            val query = DownloadManager.Query().setFilterById(id)
+            val cursor = downloadManager.query(query)
+            cursor.moveToFirst()
+            val status = when (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))) {
+                DownloadManager.STATUS_SUCCESSFUL -> "Success"
+                else -> "Failed"
+            }
+            Timber.i(status)
+            val notificationManager = ContextCompat.getSystemService(context, NotificationManager::class.java) as NotificationManager
+            notificationManager.sendNotification(context.getText(R.string.file_ready).toString(), context, id, status, url!!)
         }
     }
 
@@ -77,10 +86,28 @@ class MainActivity : AppCompatActivity() {
                 .setAllowedOverMetered(true)
                 .setAllowedOverRoaming(true)
                 .setDestinationInExternalFilesDir(this, Environment.DIRECTORY_DOWNLOADS, FILE_NAME)
-        val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
+        downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
         downloadID = downloadManager.enqueue(request)
         custom_button.buttonState = ButtonState.Loading
         Timber.i("Download Started")
+    }
+
+    private fun createChannel(channelId: String, channelName: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationChannel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH).apply {
+                setShowBadge(false)
+            }
+
+            notificationChannel.enableLights(true)
+            notificationChannel.lightColor = Color.RED
+            notificationChannel.enableVibration(true)
+            notificationChannel.description = getString(R.string.details_channel_name)
+
+            val notificationManager = this.getSystemService(
+                NotificationManager::class.java
+            )
+            notificationManager.createNotificationChannel(notificationChannel)
+        }
     }
 
     companion object {
@@ -88,7 +115,6 @@ class MainActivity : AppCompatActivity() {
         private const val GLIDE_URL = "https://github.com/bumptech/glide/archive/master.zip"
         private const val RETROFIT_URL = "https://github.com/square/retrofit/archive/master.zip"
         private const val FILE_NAME = "master.zip"
-        private const val CHANNEL_ID = "channelId"
     }
 
 }

@@ -10,19 +10,24 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.LinearInterpolator
+import androidx.core.content.ContextCompat.getColor
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.content.withStyledAttributes
 import com.udacity.ButtonState
 import com.udacity.R
 import timber.log.Timber
 import kotlin.properties.Delegates
 
-class LoadingButton @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : View(context, attrs, defStyleAttr) {
+class LoadingButton @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : View(context, attrs, defStyleAttr) {
+
+    var loadingButton: LoadingButton
+
     private var widthSize = 0
     private var heightSize = 0
     private var progress = 0F
     private var angle = 0F
+    private var buttonText = ""
+    private var buttonBackground = 0
 
     private val paint = Paint().apply {
         isAntiAlias = true
@@ -33,50 +38,50 @@ class LoadingButton @JvmOverloads constructor(
     private var buttonAnimator = ValueAnimator()
     private var circleAnimator = ValueAnimator()
 
-    var buttonState: ButtonState by Delegates.observable<ButtonState>(ButtonState.Completed) { _, _, new ->
-        Timber.i("$new")
+    var buttonState: ButtonState by Delegates.observable(ButtonState.Completed) { _, _, new ->
         when (new) {
             ButtonState.Completed -> {
                 stopAnimations()
-                invalidate()
-                Timber.i("Completed")
             }
-            ButtonState.Clicked -> Timber.i("Clicked")
+            ButtonState.Clicked -> Timber.i("Placeholder")
             ButtonState.Loading -> {
                 animatedCircle()
                 animatedButton()
-                invalidate()
-                Timber.i("Loading")
             }
         }
+        Timber.i("$new")
     }
 
     init {
         isClickable = true
+        loadingButton = findViewById(R.id.custom_button)
+        context.withStyledAttributes(attrs, R.styleable.LoadingButton) {
+            buttonBackground = getColor(R.styleable.LoadingButton_buttonBackground, 0)
+        }
     }
-
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         drawButton(canvas)
         if (buttonState == ButtonState.Loading) {
-            Timber.i("Attempting animations")
             drawButtonFill(canvas)
             drawCircle(canvas)
         }
-        drawText(canvas)
+        drawText(canvas, buttonState)
     }
 
     private fun drawButton(canvas: Canvas?) {
-        paint.color = ResourcesCompat.getColor(resources, R.color.colorPrimary, null)
+        paint.color = buttonBackground
         canvas?.drawRect(0F, 0F, widthSize.toFloat(), heightSize.toFloat(), paint)
-        Timber.i("Button drawn")
     }
 
-    private fun drawText(canvas: Canvas?) {
+    private fun drawText(canvas: Canvas?, buttonState: ButtonState) {
         paint.color = ResourcesCompat.getColor(resources, R.color.white, null)
-        canvas?.drawText(context.getString(R.string.button_text), widthSize / 2F, (heightSize / 2F) - ((paint.descent() + paint.ascent()) / 2F), paint)
-        Timber.i("Button drawn")
+        buttonText = when (buttonState) {
+            ButtonState.Loading -> context.getString(R.string.button_text_loading)
+            else -> context.getString(R.string.button_text)
+        }
+        canvas?.drawText(buttonText, widthSize / 2F, (heightSize / 2F) - ((paint.descent() + paint.ascent()) / 2F), paint)
     }
 
     private fun animatedButton() {
@@ -87,7 +92,9 @@ class LoadingButton @JvmOverloads constructor(
                 valueAnimator.repeatCount = ValueAnimator.INFINITE
                 valueAnimator.repeatMode = ValueAnimator.REVERSE
                 valueAnimator.interpolator = LinearInterpolator()
+                loadingButton.invalidate()
             }
+            disableViewDuringAnimation(loadingButton)
             start()
         }
     }
@@ -107,14 +114,17 @@ class LoadingButton @JvmOverloads constructor(
             addUpdateListener { valueAnimator ->
                 angle = valueAnimator.animatedValue as Float
                 valueAnimator.repeatCount = ValueAnimator.INFINITE
+                valueAnimator.repeatMode = ValueAnimator.REVERSE
+                loadingButton.invalidate()
             }
+            disableViewDuringAnimation(loadingButton)
             start()
         }
     }
 
     private fun drawCircle(canvas: Canvas?) {
         paint.color= Color.YELLOW
-        canvas?.drawArc((widthSize.toFloat() - 100f),(heightSize.toFloat() / 2) - 50f, (widthSize.toFloat()-50f),
+        canvas?.drawArc((widthSize.toFloat() - 150f),(heightSize.toFloat() / 2) - 50f, (widthSize.toFloat()-50f),
             (heightSize.toFloat() / 2) + 50f, 0F,angle, true,paint)
     }
 
